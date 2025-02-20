@@ -19,14 +19,21 @@ mongoose.connection.on('connected', () => {
   console.log(`Connected to MongoDB ${mongoose.connection.name}.`);
 });
 
+const postRouter = require('./controllers/posts')
+const commentRouter = require('./controllers/comments')
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(logger('dev'));
 
+app.use(cors({origin: 'http://127.0.0.1:5173'}))
+
 // Routes
 app.use('/auth', authRouter);
 app.use('/test-jwt', testJwtRouter);
+app.use('/posts', postRouter)
+app.use('/comments', commentRouter)
 
 // if you want to verify whole controllers
 // import verifytoken above
