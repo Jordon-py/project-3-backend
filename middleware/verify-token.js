@@ -2,19 +2,20 @@ const jwt = require('jsonwebtoken');
 
 function verifyToken(req, res, next) {
   try {
-    const token = req.headers.authorization.split(' ')[1];
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(403).json({ error: 'Access denied. No token provided.' });
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
     req.user = decoded.payload;
-    
-    // next passes the the request object to the controller function
-    // you will have req.user availiable in every single controller function
-    // req.user.username
-    // req.user._id
+
     next();
   } catch (err) {
-    res.status(401).json({ err: 'Invalid token.' });
+    res.status(401).json({ error: 'Invalid or expired token.' });
   }
 }
 
 module.exports = verifyToken;
+

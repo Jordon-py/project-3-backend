@@ -1,8 +1,8 @@
-// npm
-const dotenv = require('dotenv');
-dotenv.config();
+// Load environment variables
+require('dotenv').config();
+
+// Import dependencies
 const express = require('express');
-const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const logger = require('morgan');
@@ -11,37 +11,36 @@ const logger = require('morgan');
 const authRouter = require('./controllers/auth');
 const testJwtRouter = require('./controllers/test-jwt');
 const usersRouter = require('./controllers/users');
+const postRouter = require('./controllers/posts');
+const commentRouter = require('./controllers/comments');
+
+// Initialize Express
+const app = express();
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI);
-
-mongoose.connection.on('connected', () => {
-  console.log(`Connected to MongoDB ${mongoose.connection.name}.`);
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 });
 
-const postRouter = require('./controllers/posts')
-const commentRouter = require('./controllers/comments')
+mongoose.connection.on('connected', () => {
+  console.log(`Connected to MongoDB: ${mongoose.connection.name}`);
+});
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: 'http://127.0.0.1:5173' }));
 app.use(express.json());
 app.use(logger('dev'));
-
-app.use(cors({origin: 'http://127.0.0.1:5173'}))
 
 // Routes
 app.use('/auth', authRouter);
 app.use('/test-jwt', testJwtRouter);
-app.use('/posts', postRouter)
-app.use('/comments', commentRouter)
-
-// if you want to verify whole controllers
-// import verifytoken above
-// then just set it up as a middleware function like below
-// app.use(verifyToken)
 app.use('/users', usersRouter);
+app.use('/posts', postRouter);
+app.use('/posts/:postId/comments', commentRouter);
 
-// Start the server and listen on port 3000
-app.listen(3000, () => {
-  console.log('The express app is ready!');
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
