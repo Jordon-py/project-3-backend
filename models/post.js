@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+
 const postSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
@@ -17,3 +18,6 @@ postSchema.pre("remove", async function (next) {
 });
 
 module.exports = mongoose.model("Post", postSchema);
+
+
+
