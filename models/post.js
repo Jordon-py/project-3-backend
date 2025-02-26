@@ -18,11 +18,7 @@ const postSchema = new mongoose.Schema(
   { timestamps: true } // Adds createdAt & updatedAt fields
 );
 
-// Middleware to delete comments when a post is deleted
-postSchema.pre("remove", async function (next) {
-  await mongoose.model("Comment").deleteMany({ post: this._id });
-  next();
-});
+
 
 
 
