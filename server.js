@@ -37,7 +37,7 @@ app.use('/auth', authRouter);
 app.use('/test-jwt', testJwtRouter);
 app.use('/users', usersRouter);
 app.use('/posts', postRouter);
-app.use('/posts/:postId/comments', commentRouter);
+app.use('/posts/:postId/comment', commentRouter);
 
 // Start the server
 const PORT = process.env.PORT || 3000;

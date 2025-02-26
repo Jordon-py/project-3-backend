@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const Comment = require('../models/comment');
 const Post = require('../models/post');
 const verifyToken = require('../middleware/verify-token');
 
@@ -12,19 +11,14 @@ router.post('/', verifyToken, async (req, res) => {
       return res.status(400).json({ error: 'Content is required' });
     }
 
-    const comment = new Comment({
-      content,
-      author: req.user._id,
-      post: req.params.postId
-    });
-    const savedComment = await comment.save();
-
+    req.body.author = req.user._id,
+    req.body.username = req.user.username,
     const post = await Post.findById(req.params.postId);
-    post.comments.push(savedComment._id);
+    post.comments.push(req.body);
     await post.save();
 
-    const populatedComment = await Comment.findById(savedComment._id).populate('author', 'username');
-    res.status(201).json(populatedComment);
+
+    res.status(201).json(post);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
