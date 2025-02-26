@@ -46,7 +46,7 @@ router.put('/:postId/:commentId', verifyToken, async (req, res) => {
 });
 
 // Delete a comment
-router.delete('/comments/:commentId', verifyToken, async (req, res) => {
+router.delete('/posts/:postId/comments/:commentId', verifyToken, async (req, res) => {
   try {
 
 
