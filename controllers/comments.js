@@ -1,31 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const Comment = require('../models/comment');
 const Post = require('../models/post');
 const verifyToken = require('../middleware/verify-token');
 
 // Add a new comment to a post
-router.post('/', verifyToken, async (req, res) => {
+router.post('/posts/:postId/comment', verifyToken, async (req, res) => {
   try {
     const { content } = req.body;
     if (!content) {
       return res.status(400).json({ error: 'Content is required' });
     }
-
-    const comment = new Comment({
-      content,
-      author: req.user._id,
-      post: req.params.postId
-    });
-    const savedComment = await comment.save();
-
+console.log(req.params)
+    req.body.author = req.user._id
+    req.body.username = req.user.username
     const post = await Post.findById(req.params.postId);
-    post.comments.push(savedComment._id);
+    post.comments.push(req.body);
     await post.save();
 
-    const populatedComment = await Comment.findById(savedComment._id).populate('author', 'username');
-    res.status(201).json(populatedComment);
+
+    res.status(201).json(post);
   } catch (err) {
+    console.log(err.message)
     res.status(500).json({ error: err.message });
   }
 });
@@ -51,13 +46,9 @@ router.put('/:postId/:commentId', verifyToken, async (req, res) => {
 });
 
 // Delete a comment
-router.delete('/:postId/:commentId', verifyToken, async (req, res) => {
+router.delete('/comments/:commentId', verifyToken, async (req, res) => {
   try {
-    const comment = await Comment.findOneAndDelete({ _id: req.params.commentId, author: req.user._id });
 
-    if (!comment) {
-      return res.status(404).json({ error: 'Comment not found or not authorized' });
-    }
 
     const post = await Post.findById(req.params.postId);
     post.comments.pull(req.params.commentId);
