@@ -71,11 +71,11 @@ router.delete('/:postId', verifyToken, async (req, res) => {
         return res.status(404).json({ error: 'Post not found or not authorized' });
       }
   
-      // Also remove associated comments
-      await Comment.deleteMany({ post: req.params.postId });
+      
   
       res.status(200).json({ message: 'Post and associated comments deleted successfully' });
     } catch (err) {
+      console.error('Error deleting post:', err); // Improved logging
       res.status(500).json({ error: err.message });
     }
   });
